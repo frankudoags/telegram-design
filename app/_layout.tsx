@@ -6,6 +6,7 @@ export default function App() {
     <KeyboardProvider>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="chat/[chatId]" options={{ headerShown: false }} />
       </Stack>
     </KeyboardProvider>
   );

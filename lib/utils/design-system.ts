@@ -44,22 +44,22 @@ export const typography = {
 
 // ─── Colors ──────────────────────────────────────
 export const colors = {
-  background: "#111111",
-  surface: "#1A1A1A",
-  surfaceLight: "#222222",
-  surfaceMid: "#2C2C2C",
-  primary: "#7B68EE",
-  primaryLight: "#9D8CF0",
-  textPrimary: "#FFFFFF",
-  textSecondary: "#999999",
-  textTertiary: "#666666",
+  background: "#FFFFFF",
+  surface: "#FFFFFF",
+  surfaceLight: "#FFFFFF",
+  surfaceMid: "#F0F0F0",
+  primary: "#2AABEE",
+  primaryLight: "#33BFFF",
+  textPrimary: "#000000",
+  textSecondary: "#8E8E93",
+  textTertiary: "#C7C7CC",
   online: "#4CAF50",
-  sentBubble: "#7B68EE",
+  sentBubble: "#EFFDDE",
   receivedBubble: "#FFFFFF",
-  unreadBadge: "#7B68EE",
-  tabUnderline: "#7B68EE",
-  border: "#333333",
-  overlay: "rgba(0,0,0,0.6)",
+  unreadBadge: "#2AABEE",
+  tabUnderline: "#2AABEE",
+  border: "#E5E5E5",
+  overlay: "rgba(0,0,0,0.3)",
 } as const;
 
 // ─── Screen-relative helpers ─────────────────────

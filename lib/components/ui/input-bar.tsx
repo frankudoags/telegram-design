@@ -22,7 +22,7 @@ export default function InputBar({ value, onChangeText, onSend }: InputBarProps)
           value={value}
           onChangeText={onChangeText}
           placeholder="Message..."
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.textTertiary}
           returnKeyType="send"
           onSubmitEditing={handleSend}
         />

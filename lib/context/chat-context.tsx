@@ -7,21 +7,16 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { ChatNode, Chat, Message, AppState } from "../types";
+import type { ChatNode, Chat, Message } from "../types";
 
 interface ChatState {
   nodes: ChatNode[];
   chats: Record<string, Chat>;
   messages: Record<string, Message[]>;
   activeNodeId: string;
-  activeChatId: string | null;
-  appState: AppState;
   activeTab: string;
   setActiveNode: (id: string) => void;
-  openChat: (chatId: string) => void;
-  closeChat: () => void;
   sendMessage: (chatId: string, text: string) => void;
-  setAppState: (state: AppState) => void;
   setActiveTab: (tab: string) => void;
 }
 
@@ -38,7 +33,7 @@ const MOCK_NODES: ChatNode[] = [
     id: "default",
     name: "Chats",
     emoji: "💬",
-    color: "#7B68EE",
+    color: "#2AABEE",
     chatIds: ["1", "2", "3", "4"],
     tabs: ["All Chats", "Personal", "Groups"],
   },
@@ -116,29 +111,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [chats] = useState<Record<string, Chat>>(MOCK_CHATS);
   const [messages, setMessages] = useState<Record<string, Message[]>>(MOCK_MESSAGES);
   const [activeNodeId, setActiveNodeId] = useState("default");
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [appState, setAppStateInner] = useState<AppState>("chatList");
   const [activeTab, setActiveTab] = useState("All Chats");
 
   const setActiveNode = useCallback((id: string) => {
     setActiveNodeId(id);
-    setActiveChatId(null);
     const node = MOCK_NODES.find((n) => n.id === id);
     if (node) setActiveTab(node.tabs[0]);
-  }, []);
-
-  const openChat = useCallback((chatId: string) => {
-    setActiveChatId(chatId);
-    setAppStateInner("chatView");
-  }, []);
-
-  const closeChat = useCallback(() => {
-    setActiveChatId(null);
-    setAppStateInner("chatList");
-  }, []);
-
-  const setAppState = useCallback((state: AppState) => {
-    setAppStateInner(state);
   }, []);
 
   const sendMessage = useCallback((chatId: string, text: string) => {
@@ -162,14 +140,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         chats,
         messages,
         activeNodeId,
-        activeChatId,
-        appState,
         activeTab,
         setActiveNode,
-        openChat,
-        closeChat,
         sendMessage,
-        setAppState,
         setActiveTab,
       }}
     >

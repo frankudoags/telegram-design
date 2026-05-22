@@ -1,64 +1,80 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Pressable } from "react-native";
+import { Picker, Host } from "@expo/ui";
 import Avatar from "./avatar";
 import IconButton from "./icon-button";
 import { spacing, typography, colors, sizing } from "../../utils";
+import type { ChatNode } from "../../types";
 
 interface ChatHeaderProps {
   mode: "list" | "chat";
   name: string;
   online?: boolean;
-  nodeName?: string;
   nodeEmoji?: string;
   onBack: () => void;
-  onNodeNamePress?: () => void;
+  activeNodeId?: string;
+  nodes?: ChatNode[];
+  onNodeSelect?: (nodeId: string) => void;
 }
 
 export default function ChatHeader({
   mode,
   name,
   online,
-  nodeName,
   nodeEmoji,
   onBack,
-  onNodeNamePress,
+  activeNodeId,
+  nodes,
+  onNodeSelect,
 }: ChatHeaderProps) {
   const insets = useSafeAreaInsets();
 
   if (mode === "list") {
     return (
+      <Host matchContents>
       <View style={[styles.container, { paddingTop: insets.top || spacing.md }]}>
         <View style={styles.row}>
           <Text style={styles.editBtn}>Edit</Text>
-          <Pressable onPress={onNodeNamePress} style={styles.nodeNameWrap}>
-            <Text style={styles.nodeName}>
-              {nodeEmoji} {nodeName}
-            </Text>
-            <Text style={styles.chevron}>▾</Text>
-          </Pressable>
+          <View style={styles.nodeNameWrap}>
+            <Picker
+              selectedValue={activeNodeId ?? ""}
+              onValueChange={(value: string) => {
+                onNodeSelect?.(value);
+              }}
+              appearance="menu"
+            >
+              {nodes?.map((node) => (
+                <Picker.Item
+                  key={node.id}
+                  label={`${node.emoji} ${node.name}`}
+                  value={node.id}
+                />
+              ))}
+            </Picker>
+          </View>
           <View style={styles.rightBtns}>
             <IconButton icon="+" onPress={() => {}} size={20} style={styles.iconBtn} />
             <IconButton icon="✏" onPress={() => {}} size={16} style={styles.iconBtn} />
           </View>
         </View>
       </View>
+      </Host>
     );
   }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top || spacing.md }]}>
       <View style={styles.row}>
-        <IconButton icon="←" onPress={onBack} size={22} />
+        <IconButton icon="←" color="black" onPress={onBack} size={22} />
         <View style={styles.chatInfo}>
           <Avatar name={name} size={sizing.avatar.sm} online={online} />
           <Text style={styles.chatName} numberOfLines={1}>
             {name}
           </Text>
         </View>
-        <Pressable onPress={onNodeNamePress} style={styles.nodeNameWrapSmall}>
+        <View style={styles.nodeNameWrapSmall}>
           <Text style={styles.nodeNameSmall}>{nodeEmoji}</Text>
-        </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -82,16 +98,6 @@ const styles = StyleSheet.create({
   nodeNameWrap: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.xs,
-  },
-  nodeName: {
-    color: colors.textPrimary,
-    fontSize: typography.fontSize.title,
-    fontWeight: "bold",
-  },
-  chevron: {
-    color: colors.textSecondary,
-    fontSize: typography.fontSize.caption,
   },
   rightBtns: {
     flexDirection: "row",

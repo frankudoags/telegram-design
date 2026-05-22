@@ -26,4 +26,3 @@ export interface Message {
   senderId: "me" | "them";
 }
 
-export type AppState = "chatList" | "chatView" | "nodeSwitcher";

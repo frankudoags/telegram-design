@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { LegendList } from "@legendapp/list";
@@ -8,25 +9,22 @@ import { useChatContext } from "../../context";
 import { spacing, colors } from "../../utils";
 import type { Message } from "../../types";
 
-interface ChatViewScreenProps {
-  onBack: () => void;
-  onNodeNamePress: () => void;
-}
-
-export default function ChatViewScreen({ onBack, onNodeNamePress }: ChatViewScreenProps) {
-  const { chats, messages, sendMessage, nodes, activeNodeId, activeChatId } = useChatContext();
+export default function ChatViewScreen() {
+  const { chatId } = useLocalSearchParams<{ chatId: string }>();
+  const router = useRouter();
+  const { chats, messages, sendMessage, nodes, activeNodeId } = useChatContext();
   const insets = useSafeAreaInsets();
   const [inputText, setInputText] = useState("");
 
-  const chat = activeChatId ? chats[activeChatId] : null;
+  const chat = chatId ? chats[chatId] : null;
   const activeNode = nodes.find((n) => n.id === activeNodeId) || nodes[0];
-  const chatMessages = activeChatId ? (messages[activeChatId] || []) : [];
+  const chatMessages = chatId ? (messages[chatId] || []) : [];
 
   const handleSend = useCallback(() => {
-    if (!activeChatId || !inputText.trim()) return;
-    sendMessage(activeChatId, inputText.trim());
+    if (!chatId || !inputText.trim()) return;
+    sendMessage(chatId, inputText.trim());
     setInputText("");
-  }, [activeChatId, inputText, sendMessage]);
+  }, [chatId, inputText, sendMessage]);
 
   const renderItem = useCallback(({ item }: { item: Message }) => {
     return <MessageBubble message={item} />;
@@ -41,10 +39,8 @@ export default function ChatViewScreen({ onBack, onNodeNamePress }: ChatViewScre
           mode="chat"
           name={chat.name}
           online={chat.online}
-          nodeName={activeNode.name}
           nodeEmoji={activeNode.emoji}
-          onBack={onBack}
-          onNodeNamePress={onNodeNamePress}
+          onBack={() => router.back()}
         />
         <View style={styles.messagesArea}>
           <LegendList

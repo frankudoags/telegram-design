@@ -56,13 +56,13 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.body,
     lineHeight: typography.fontSize.body + 5,
   },
-  textMe: { color: "#fff" },
-  textThem: { color: "#000" },
+  textMe: { color: colors.textPrimary },
+  textThem: { color: colors.textPrimary },
   time: {
     fontSize: typography.fontSize.caption,
     marginTop: spacing.xs,
     alignSelf: "flex-end",
   },
-  timeMe: { color: "rgba(255,255,255,0.7)" },
-  timeThem: { color: "rgba(0,0,0,0.4)" },
+  timeMe: { color: colors.textSecondary },
+  timeThem: { color: colors.textTertiary },
 });
