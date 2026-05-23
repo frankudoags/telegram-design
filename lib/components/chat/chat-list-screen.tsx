@@ -8,6 +8,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChatContext } from "../../context";
 import {
   colors,
@@ -23,12 +24,13 @@ export default function ChatListScreen() {
   const { nodes, chats, activeNodeId, activeTab, setActiveTab, setActiveNode } =
     useChatContext();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const flatListRef = useRef<FlatList>(null);
   const minimizedProgress = useSharedValue(0);
   const [isMinimized, setIsMinimized] = useState(false);
   const activeNode = nodes.find((n) => n.id === activeNodeId) || nodes[0];
-  const minimizedItemWidth = SCREEN_WIDTH * 0.9;
-  const minimizedItemGap = spacing.lg;
+  const minimizedItemWidth = SCREEN_WIDTH * 0.7;
+  const minimizedItemGap = spacing.xl;
   const minimizedItemOffset = minimizedItemWidth + minimizedItemGap;
 
   useEffect(() => {
@@ -43,18 +45,6 @@ export default function ChatListScreen() {
       setActiveNode(nodeId);
     },
     [setActiveNode],
-  );
-
-  const handleMomentumScrollEnd = useCallback(
-    (event: any) => {
-      const offsetX = event.nativeEvent.contentOffset.x;
-      const index = Math.round(offsetX / SCREEN_WIDTH);
-      const node = nodes[index];
-      if (node && node.id !== activeNodeId) {
-        setActiveNode(node.id);
-      }
-    },
-    [nodes, activeNodeId, setActiveNode],
   );
 
   const handleChatPress = useCallback(
@@ -75,8 +65,16 @@ export default function ChatListScreen() {
   const handleSelectNode = useCallback(
     (nodeId: string) => {
       setActiveNode(nodeId);
+      const index = nodes.findIndex((node) => node.id === nodeId);
+      if (index >= 0) {
+        flatListRef.current?.scrollToIndex({ index, animated: true });
+      }
+      if (isMinimized) {
+        setIsMinimized(false);
+        minimizedProgress.value = withTiming(0, { duration: 220 });
+      }
     },
-    [setActiveNode],
+    [isMinimized, minimizedProgress, nodes, setActiveNode],
   );
 
   const animatedDockStyle = useAnimatedStyle(() => ({
@@ -138,10 +136,9 @@ export default function ChatListScreen() {
         horizontal
         pagingEnabled={!isMinimized}
         snapToInterval={isMinimized ? minimizedItemOffset : undefined}
-        snapToAlignment={isMinimized ? "center" : undefined}
         decelerationRate={isMinimized ? "fast" : "normal"}
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={handleMomentumScrollEnd}
+        scrollEnabled={isMinimized}
         contentContainerStyle={
           isMinimized ? styles.minimizedListContent : styles.expandedListContent
         }
@@ -154,7 +151,14 @@ export default function ChatListScreen() {
         })}
       />
       <Animated.View
-        style={[styles.bottomDock, animatedDockStyle]}
+        style={[
+          styles.bottomDock,
+          {
+            bottom: insets.bottom + spacing.md,
+            paddingHorizontal: spacing.sm,
+          },
+          animatedDockStyle,
+        ]}
         pointerEvents={isMinimized ? "auto" : "none"}
       >
         <IconButton
@@ -187,19 +191,19 @@ export default function ChatListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surfaceMid,
   },
   minimizedListContent: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
+    paddingHorizontal: SCREEN_WIDTH * 0.15,
+    paddingVertical: spacing.xl,
     alignItems: "center",
   },
   expandedListContent: {
     paddingVertical: 0,
   },
   minimizedItem: {
-    width: SCREEN_WIDTH * 0.9,
-    height: SCREEN_HEIGHT * 0.78,
+    width: SCREEN_WIDTH * 0.7,
+    height: SCREEN_HEIGHT * 0.7,
   },
   expandedItem: {
     width: SCREEN_WIDTH,
@@ -210,9 +214,6 @@ const styles = StyleSheet.create({
   },
   bottomDock: {
     position: "absolute",
-    left: spacing.md,
-    right: spacing.md,
-    bottom: spacing.md,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

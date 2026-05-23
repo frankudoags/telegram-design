@@ -32,16 +32,39 @@ export default function ChatHeader({
         <View
           style={[styles.container, { paddingTop: insets.top || spacing.md }]}
         >
-          <View style={styles.minimizedRow}>
+          <View style={styles.row}>
+            <View
+              style={[styles.leftSlot, styles.hiddenSlot]}
+              pointerEvents="none"
+            />
             <Pressable
               accessibilityRole="button"
               onPress={onNodeNamePress}
-              style={styles.minimizedTitleButton}
+              style={styles.nodeNameButton}
             >
-              <Text style={styles.minimizedTitle} numberOfLines={1}>
-                {name}
-              </Text>
+              <View style={styles.nodeNameMain}>
+                <View style={styles.avatarCluster}>
+                  <GradientAvatar name={`${name}-1`} size={30} />
+                  <View style={styles.avatarOverlap}>
+                    <GradientAvatar name={`${name}-2`} size={30} />
+                  </View>
+                </View>
+                <Text
+                  style={styles.chatName}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {name}
+                </Text>
+              </View>
+              <View style={styles.chevronButton}>
+                <Text style={styles.chevronIcon}>⌄</Text>
+              </View>
             </Pressable>
+            <View
+              style={[styles.rightBtns, styles.hiddenSlot]}
+              pointerEvents="none"
+            />
           </View>
         </View>
       );
@@ -62,9 +85,9 @@ export default function ChatHeader({
           >
             <View style={styles.nodeNameMain}>
               <View style={styles.avatarCluster}>
-                <GradientAvatar name={`${name}-1`} size={20} />
+                <GradientAvatar name={`${name}-1`} size={30} />
                 <View style={styles.avatarOverlap}>
-                  <GradientAvatar name={`${name}-2`} size={20} />
+                  <GradientAvatar name={`${name}-2`} size={30} />
                 </View>
               </View>
               <Text
@@ -152,17 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.sm,
   },
-  minimizedTitleButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-  },
-  minimizedTitle: {
-    color: colors.textPrimary,
-    fontSize: typography.fontSize.subhead,
-    fontWeight: "600",
-  },
   editBtn: {
     color: colors.primary,
     fontSize: typography.fontSize.body,
@@ -173,20 +185,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nodeNameButton: {
-    flex: 1,
+    flexGrow: 0,
+    flexShrink: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    minWidth: 0,
-    maxWidth: "100%",
+    justifyContent: "center",
+    alignSelf: "center",
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.xs,
+    minWidth: 0,
+  },
+  hiddenSlot: {
+    opacity: 0,
   },
   nodeNameMain: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
-    flex: 1,
     minWidth: 0,
   },
   avatarCluster: {
